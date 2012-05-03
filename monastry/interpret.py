@@ -7,14 +7,14 @@ class Interpreter:
     def _swap(s): top = s.pop(); snd = s.pop(); s.append(top); s.append(snd)
 
     builtins = {
-            'inc':  _1ary(lambda x: int(x) + 1),
-            'dec':  _1ary(lambda x: int(x) - 1),
+            'inc':  _1ary(lambda x: x + 1),
+            'dec':  _1ary(lambda x: x - 1),
             'wrap': _1ary(lambda x: [x]),
 
-            '+':    _2ary(lambda x, y: int(y) + int(x)),
-            '-':    _2ary(lambda x, y: int(y) - int(x)),
+            '+':    _2ary(lambda x, y: y + x),
+            '-':    _2ary(lambda x, y: y - x),
             'eq':   _2ary(lambda x, y: 1 if x == y else 0),
-            'lt':   _2ary(lambda x, y: 1 if int(y) < int(x) else 0),
+            'lt':   _2ary(lambda x, y: 1 if y < x else 0),
             'dup':  lambda s: s.append(s[-1]),
             'drop': lambda s: s.pop(),
             'swap': _swap
@@ -33,6 +33,11 @@ class Interpreter:
         self.builtins[name] = func
 
     def reduce_item(self, item, stack):
+        try:
+            if type(item) == str:
+                item = int(item)
+        except ValueError:
+            pass
         if type(item) == str and self.builtins.has_key(item):
             self.builtins.get(item)(stack)
         elif item == 'if':
@@ -71,16 +76,21 @@ class TestInterpreter(unittest.TestCase):
     def setUp(self):
         self.i = Interpreter()
 
-    def test_eval(self):
+    def test_arithmetic(self):
+        self.assertEqual(self.i.interpret("()"), [])
+        self.assertEqual(self.i.interpret("(4)"), [4])
+        self.assertEqual(self.i.interpret("(4 2)"), [4, 2])
         self.assertEqual(self.i.interpret("(4 2 +)"), [6])
         self.assertEqual(self.i.interpret("(4 2 -)"), [2])
         self.assertEqual(self.i.interpret("(5 inc)"), [6])
         self.assertEqual(self.i.interpret("(7 dec)"), [6])
+
+    def test_eval(self):
         self.assertEqual(self.i.interpret("(5 (inc) eval)"), [6])
         self.assertEqual(self.i.interpret("(21 (inc dec) eval)"), [21])
 
     def test_wrap(self):
-        self.assertEqual(self.i.interpret("(2 wrap eval)"), ['2'])
+        self.assertEqual(self.i.interpret("(2 wrap eval)"), [2])
         self.assertEqual(self.i.interpret("((5 inc) wrap eval eval)"), [6])
 
     def test_times(self):
@@ -89,11 +99,11 @@ class TestInterpreter(unittest.TestCase):
 
     def test_if(self):
         self.assertEqual(self.i.interpret("(20 1 (10 +) if)"), [30])
-        self.assertEqual(self.i.interpret("(20 0 (10 +) if)"), ['20'])
+        self.assertEqual(self.i.interpret("(20 0 (10 +) if)"), [20])
 
         # inc-lt50 = dup 50 lt (inc) if
         self.assertEqual(self.i.interpret("(45 (dup 50 lt (inc) if) eval)"), [46])
-        self.assertEqual(self.i.interpret("(50 (dup 50 lt (inc) if) eval)"), ['50'])
+        self.assertEqual(self.i.interpret("(50 (dup 50 lt (inc) if) eval)"), [50])
         self.assertEqual(self.i.interpret("(45 (dup 50 lt (inc) if) 10 times)"), [50])
 
     def test_swap(self):
