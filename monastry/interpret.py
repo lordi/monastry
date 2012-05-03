@@ -1,17 +1,18 @@
 from pyparsing import *
 import pprint
 
-def _1ary(func): return lambda s: s.append(func(s.pop()))
-def _2ary(func): return lambda s: s.append(func(s.pop(), s.pop()))
-
 class Interpreter:
+    def _1ary(func): return lambda s: s.append(func(s.pop()))
+    def _2ary(func): return lambda s: s.append(func(s.pop(), s.pop()))
     def _swap(s): top = s.pop(); snd = s.pop(); s.append(top); s.append(snd)
 
     builtins = {
             'inc':  _1ary(lambda x: int(x) + 1),
+            'dec':  _1ary(lambda x: int(x) - 1),
             'wrap': _1ary(lambda x: [x]),
 
-            '+':    _2ary(lambda x, y: int(x) + int(y)),
+            '+':    _2ary(lambda x, y: int(y) + int(x)),
+            '-':    _2ary(lambda x, y: int(y) - int(x)),
             'eq':   _2ary(lambda x, y: 1 if x == y else 0),
             'lt':   _2ary(lambda x, y: 1 if int(y) < int(x) else 0),
             'dup':  lambda s: s.append(s[-1]),
@@ -71,9 +72,12 @@ class TestInterpreter(unittest.TestCase):
         self.i = Interpreter()
 
     def test_eval(self):
-        self.assertEqual(self.i.interpret("(2 4 +)"), [6])
+        self.assertEqual(self.i.interpret("(4 2 +)"), [6])
+        self.assertEqual(self.i.interpret("(4 2 -)"), [2])
         self.assertEqual(self.i.interpret("(5 inc)"), [6])
+        self.assertEqual(self.i.interpret("(7 dec)"), [6])
         self.assertEqual(self.i.interpret("(5 (inc) eval)"), [6])
+        self.assertEqual(self.i.interpret("(21 (inc dec) eval)"), [21])
 
     def test_wrap(self):
         self.assertEqual(self.i.interpret("(2 wrap eval)"), ['2'])
