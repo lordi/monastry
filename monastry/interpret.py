@@ -1,22 +1,21 @@
 from pyparsing import *
 import pprint
 
-# todo convert to int while scanning
-
-def mk_1ary(func): return lambda s: s.append(func(s.pop()))
-def mk_2ary(func): return lambda s: s.append(func(s.pop(), s.pop()))
+def _1ary(func): return lambda s: s.append(func(s.pop()))
+def _2ary(func): return lambda s: s.append(func(s.pop(), s.pop()))
 
 class Interpreter:
     def _swap(s): top = s.pop(); snd = s.pop(); s.append(top); s.append(snd)
 
     builtins = {
-            '+':    mk_2ary(lambda x, y: int(x) + int(y)),
-            'inc':  mk_1ary(lambda x: int(x) + 1),
-            'eq':   mk_2ary(lambda x, y: 1 if x == y else 0),
-            'lt':   mk_2ary(lambda x, y: 1 if int(y) < int(x) else 0),
+            'inc':  _1ary(lambda x: int(x) + 1),
+            'wrap': _1ary(lambda x: [x]),
+
+            '+':    _2ary(lambda x, y: int(x) + int(y)),
+            'eq':   _2ary(lambda x, y: 1 if x == y else 0),
+            'lt':   _2ary(lambda x, y: 1 if int(y) < int(x) else 0),
             'dup':  lambda s: s.append(s[-1]),
             'drop': lambda s: s.pop(),
-            'wrap': mk_1ary(lambda x: [x]),
             'swap': _swap
     }
 
@@ -58,6 +57,7 @@ class Interpreter:
         return stack
 
     def scan(self, data):
+        # TODO convert ints during
         nestedItems = nestedExpr()
         return nestedItems.parseString(data).asList().pop()
 
@@ -107,7 +107,6 @@ class TestInterpreter(unittest.TestCase):
         self.assertEqual(self.i.interpret("(66 play-note)"), [])
         # major-chord = dup play-note 5 + dup play-note 7 + play-note
         self.assertEqual(self.i.interpret("(66 (dup play-note 5 + dup play-note 7 + play-note) eval)"), [])
-
 
 if __name__ == '__main__':
     unittest.main()
