@@ -1,0 +1,9 @@
+vim supercollider tracker
+=========================
+
+Run proof of concept:
+vim --cmd ':so monastry.vim' song.vc
+
+Checkout:
+http://brainacle.com/how-to-write-vim-plugins-with-python.html
+https://trac.assembla.com/pkaudio/browser/bin/pkscmidi

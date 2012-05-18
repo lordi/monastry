@@ -1,8 +1,0 @@
-Run proof of concept:
-vim -S pc_test.vim song.vc
-
-Run python threading test:
-vim --cmd ':so py_test.vim' song.vc
-
-Checkout:
-http://brainacle.com/how-to-write-vim-plugins-with-python.html
