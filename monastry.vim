@@ -24,7 +24,8 @@ class VimCollider(Thread):
         for b in self.vc_buffers:
             b['pc'] += 1
             if b['pc'] > len(b['buffer']):
-                b['pc'] = 1
+                b['pc'] = 2
+            #print b['buffer'][b['pc']]
 
     def add_buffer(self):
         print "add buffer:", vim.current.buffer.name

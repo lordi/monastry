@@ -1,5 +1,5 @@
-vim supercollider tracker
-=========================
+Monastry - vim supercollider tracker
+====================================
 
 Run proof of concept:
 vim --cmd ':so monastry.vim' song.vc
