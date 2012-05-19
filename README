@@ -1,9 +1,13 @@
-Monastry - vim supercollider tracker
-====================================
+Monastry - supercollider tracker with vim interface
+===================================================
+
+This does not function yet, work in progress.
 
 Run proof of concept:
-vim --cmd ':so monastry.vim' song.vc
+
+    vim --cmd ':so monastry.vim' song.vc
 
 Checkout:
-http://brainacle.com/how-to-write-vim-plugins-with-python.html
-https://trac.assembla.com/pkaudio/browser/bin/pkscmidi
+
+    http://brainacle.com/how-to-write-vim-plugins-with-python.html
+    https://trac.assembla.com/pkaudio/browser/bin/pkscmidi
