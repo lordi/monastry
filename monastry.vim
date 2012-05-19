@@ -1,89 +1,100 @@
 python << endpython
-
-import vim
-import thread
 import time
+import os
 from threading import Thread, Lock
+import vim
+import scosc
 
 # Remember that the vim object is not threadsafe.
-class VimCollider(Thread):
-    vc_buffers = []
-    vc_exit = False
-    vc_data_lck = Lock()
+class Monastry(Thread):
+    buffers = []
+    alive = True
+    lock = Lock()
 
     def run(self):
-        self.vc_data_lck.acquire()
-        while not self.vc_exit:
-            self.vc_data_lck.release()
+        server = scosc.Controller(("localhost", 57110),verbose=True)
+        fpath = '~/src/monastry/sound/synths/wobble.scsyndef'
+        server.sendMsg('/d_load', os.path.expanduser(fpath))
+        osc = ('/s_new', 'wobble', 1075, 1, 0, 'key', 0)
+        self.server = server
+        time.sleep(1)
+        self.server.sendMsg(*osc)
+        print '<<<', osc
+
+        print server
+        #options.host, int(options.port)),
+        #                      verbose=options.verbose,
+        #                      spew=options.spew)
+
+        self.lock.acquire()
+        while self.alive:
+            self.lock.release()
             time.sleep(0.2)
-            self.vc_data_lck.acquire()
+            self.lock.acquire()
             self.step()
-        self.vc_data_lck.release()
+        self.lock.release()
 
     def step(self):
-        for b in self.vc_buffers:
+        for b in self.buffers:
             b['pc'] += 1
             if b['pc'] > len(b['buffer']):
-                b['pc'] = 2
-            #print b['buffer'][b['pc']]
+                b['pc'] = 1
+            if b['buffer'][b['pc']-1].find('beat') >= 0:
+                osc = ('/s_new', 'wobble', 1075+b['pc'], 1, 0)
+                self.server.sendMsg(*osc)
+
 
     def add_buffer(self):
         print "add buffer:", vim.current.buffer.name
-        self.vc_buffers.append({'pc': 1, 'prev_pc': 1, 'buffer': vim.current.buffer})
+        self.buffers.append({'pc': 1, 'prev_pc': 1, 'buffer': vim.current.buffer})
 
     def update_vim(self):
-        self.vc_data_lck.acquire()
-        #vim.current.buffer.append("pc=%d at %s" % (vc_data['pc'], time.ctime(time.time()) ))
-        #print vc_data
-        for b in self.vc_buffers:
+        self.lock.acquire()
+        #vim.current.buffer.append("pc=%d at %s" % (data['pc'], time.ctime(time.time()) ))
+        #print data
+        for b in self.buffers:
             vim.command(":sign place {0} line={0} name=pc file={1}".format(b['pc'], b['buffer'].name))
             if b['prev_pc'] != b['pc']:
                 vim.command(":sign unplace {0}".format(b['prev_pc']))
                 b['prev_pc'] = b['pc']
-        self.vc_data_lck.release()
+        self.lock.release()
 
     def exit(self):
-        print "called exit.", vc_exit
-        self.vc_data_lck.acquire()
-        vc_exit = True
-        self.vc_data_lck.release()
+        print "called exit."
+        self.lock.acquire()
+        alive = False
+        self.lock.release()
 
-vc = VimCollider()
-vc.start()
+mot = Monastry()
+mot.start()
+time.sleep(5)
 endpython
 
 function! MyCoolFunction2()
 python << endpython
-#vc.update_vim()
+#mot.update_vim()
 endpython
 endfunction
 
 function! MyCoolFunction()
 python << endpython
-vc.update_vim()
+mot.update_vim()
 vim.command("return 1")
 endpython
 endfunction
 
 function! ShouldIReallyExit()
 python << endpython
-vc.exit()
+mot.exit()
 endpython
     qall
 endfunction
 
 function! Timer()
-  call feedkeys("f\e")
-  "let lastline = line("w$")
-  "let recent = g:vc_pc
-  "let g:vc_pc = g:vc_pc >= lastline ? 1 : g:vc_pc + 1
+  call feedkeys("f\e") " this needs some tweaking because C-W does not work reliably anymore
 python << endpython
-vc.update_vim()
+mot.update_vim()
 endpython
-  "  :exe ":sign place " . g:vc_pc . " line=" . g:vc_pc . " name=pc file=" . expand("%:p")
-  ":exe ":sign unplace " . recent
-  " K_IGNORE keycode does not work after version 7.2.025)
-  " there are numerous other keysequences that you can use
 endfunction
 
 sign define pc text=> texthl=Search
@@ -91,7 +102,7 @@ sign define pc text=> texthl=Search
 augroup vimcollider
     au CursorHold * call Timer()
     " TODO: insert mode autocmd CursorHoldI * call Timer()
-    au BufRead *.vc py vc.add_buffer()
+    au BufRead *.mot py mot.add_buffer()
     "au VimLeavePre * call ShouldIReallyExit() 
 augroup END
 
