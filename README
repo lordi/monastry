@@ -5,7 +5,7 @@ This does not function yet, work in progress.
 
 Run proof of concept:
 
-    vim --cmd ':so monastry.vim' song.vc
+    vim --cmd ':so monastry.vim' patterns/pattern.mot
 
 Checkout:
 
