@@ -6,26 +6,28 @@ import vim
 import scosc
 
 # Remember that the vim object is not threadsafe.
+
+class Track:
+    def __init__(self, monastry, buffer):
+        self.pc = 1
+        self.prev_pc = 1
+        self.buffer = buffer
+        self.synth = 'wobble'
+        self.monastry = monastry
+        self.monastry.load_synth(self.synth)
+
+    def interpret(self, line):
+        if line.find('beat') >= 0:
+            osc = ('/s_new', self.synth, 1075+self.pc, 1, 0)
+            self.monastry.server.sendMsg(*osc)
+
 class Monastry(Thread):
-    buffers = []
+    tracks = []
     alive = True
     lock = Lock()
 
     def run(self):
-        server = scosc.Controller(("localhost", 57110),verbose=True)
-        fpath = '~/src/monastry/sound/synths/wobble.scsyndef'
-        server.sendMsg('/d_load', os.path.expanduser(fpath))
-        osc = ('/s_new', 'wobble', 1075, 1, 0, 'key', 0)
-        self.server = server
-        time.sleep(1)
-        self.server.sendMsg(*osc)
-        print '<<<', osc
-
-        print server
-        #options.host, int(options.port)),
-        #                      verbose=options.verbose,
-        #                      spew=options.spew)
-
+        self.server = scosc.Controller(("localhost", 57110),verbose=True)
         self.lock.acquire()
         while self.alive:
             self.lock.release()
@@ -34,47 +36,41 @@ class Monastry(Thread):
             self.step()
         self.lock.release()
 
-    def step(self):
-        for b in self.buffers:
-            b['pc'] += 1
-            if b['pc'] > len(b['buffer']):
-                b['pc'] = 1
-            if b['buffer'][b['pc']-1].find('beat') >= 0:
-                osc = ('/s_new', 'wobble', 1075+b['pc'], 1, 0)
-                self.server.sendMsg(*osc)
+    def load_synth(self, name):
+        fpath = '~/src/monastry/sound/synths/{0}.scsyndef'.format(name)
+        self.server.sendMsg('/d_load', os.path.expanduser(fpath))
 
+    def step(self):
+        for b in self.tracks:
+            b.pc += 1
+            if b.pc > len(b.buffer):
+                b.pc = 1
+            b.interpret(b.buffer[b.pc - 1])
 
     def add_buffer(self):
         print "add buffer:", vim.current.buffer.name
-        self.buffers.append({'pc': 1, 'prev_pc': 1, 'buffer': vim.current.buffer})
+        self.tracks.append(Track(self, vim.current.buffer))
 
     def update_vim(self):
         self.lock.acquire()
         #vim.current.buffer.append("pc=%d at %s" % (data['pc'], time.ctime(time.time()) ))
         #print data
-        for b in self.buffers:
-            vim.command(":sign place {0} line={0} name=pc file={1}".format(b['pc'], b['buffer'].name))
-            if b['prev_pc'] != b['pc']:
-                vim.command(":sign unplace {0}".format(b['prev_pc']))
-                b['prev_pc'] = b['pc']
+        for b in self.tracks:
+            vim.command(":sign place {0} line={0} name=pc file={1}".format(b.pc, b.buffer.name))
+            if b.prev_pc != b.pc:
+                vim.command(":sign unplace {0}".format(b.prev_pc))
+                b.prev_pc = b.pc
         self.lock.release()
 
     def exit(self):
-        print "called exit."
         self.lock.acquire()
-        alive = False
+        print "called exit."
+        self.alive = False
         self.lock.release()
 
 mot = Monastry()
 mot.start()
-time.sleep(5)
 endpython
-
-function! MyCoolFunction2()
-python << endpython
-#mot.update_vim()
-endpython
-endfunction
 
 function! MyCoolFunction()
 python << endpython
@@ -103,7 +99,7 @@ augroup vimcollider
     au CursorHold * call Timer()
     " TODO: insert mode autocmd CursorHoldI * call Timer()
     au BufRead *.mot py mot.add_buffer()
-    "au VimLeavePre * call ShouldIReallyExit() 
+    au VimLeavePre * call ShouldIReallyExit() 
 augroup END
 
 set updatetime=100
