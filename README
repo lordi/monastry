@@ -14,8 +14,6 @@ Some notes
 
  * http://brainacle.com/how-to-write-vim-plugins-with-python.html
  * https://trac.assembla.com/pkaudio/browser/bin/pkscmidi
+ * Terminology: Main class == Monastry, each buffer == Scripture?
 
-Bugs
-----
 
- * vim doesn't quit
