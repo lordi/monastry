@@ -3,7 +3,10 @@ Monastry - supercollider tracker with vim interface
 
 This does not function yet, work in progress.
 
-The goal of this project is to create a audio tracker with vim. This will include both a low-level step-oriented tracker language and a vim plugin that turns vim into a music production studio.
+The goal of this project is to create a audio tracker with vim. This will include 
+both a low-level step-oriented tracker language and a plugin that turns vim into 
+a music production studio with [live coding](http://en.wikipedia.org/wiki/Live_coding)
+capabilities.
 
 Run proof of concept
 --------------------
