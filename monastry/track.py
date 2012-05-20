@@ -8,6 +8,12 @@ class Track:
         self.monastry.load_synth(self.synth)
 
     def interpret(self, line):
-        if line.find('beat') >= 0:
-            osc = ('/s_new', self.synth, 1075+self.pc, 1, 0)
-            self.monastry.server.sendMsg(*osc)
+        notes = line.split(' ')
+        i = 0
+        for n in notes:
+            try:
+                osc = ('/s_new', self.synth, 1075+self.pc*100+i, 1, 0, 'freq', int(n)*100)
+                self.monastry.server.sendMsg(*osc)
+            except Exception:
+                pass
+            i = i + 1
