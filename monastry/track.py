@@ -7,6 +7,18 @@ class Track:
         self.monastry = monastry
         self.monastry.load_synth(self.synth)
 
+    def step(self):
+        if self.pc > len(self.buffer):
+            self.pc = 1
+        curr_pc = self.pc
+        self.pc += 1
+        if self.pc > len(self.buffer):
+            self.pc = 1
+        while self.buffer[self.pc - 1][0] == '#' and self.pc != curr_pc:
+            self.pc += 1
+            if self.pc > len(self.buffer):
+                self.pc = 1
+
     def interpret(self, line):
         notes = line.split(' ')
         i = 0

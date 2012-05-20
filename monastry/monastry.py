@@ -26,13 +26,10 @@ class Monastry(Thread):
 
     def step(self):
         for b in self.tracks:
-            b.pc += 1
-            if b.pc > len(b.buffer):
-                b.pc = 1
+            b.step()
             b.interpret(b.buffer[b.pc - 1])
 
     def add_buffer(self):
-        print "add buffer:", vim.current.buffer.name
         self.tracks.append(Track(self, vim.current.buffer))
 
     def update_vim(self):
