@@ -1,0 +1,8 @@
+(synth "wobble") *1 (synth "windnoise")
+*30 *30 *30
+*3 *30 *30 (synth "wobble") *2 (synth "windnoise")
+*30 *30 *30 (synth "wobble") *1 (synth "windnoise")
+*30 *30 *30
+*3 *30 *100 *1 *1
+*30 *30 *30 (synth "wobble") *2 (synth "windnoise")
+*30 *30 *30 (synth "wobble") *1 (synth "windnoise")

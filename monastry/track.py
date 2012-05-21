@@ -6,7 +6,6 @@ class Track:
         self.synth = 'wobble'
         self.monastry = monastry
         self.i = 1
-        if self.monastry != None: self.monastry.load_synth(self.synth) 
 
     def step(self):
         if self.pc > len(self.buffer):
@@ -34,7 +33,7 @@ class Track:
         if len(tree) == 1:
             if (type(tree[0]) == str or type(tree[0]) == unicode):
                 if tree[0][0] == '*':
-                    return [["note-on"], int(tree[0][1:])]
+                    return [["note-on"], int(tree[0][1:]) if len(tree[0]) > 1 else None]
                 else:
                     return list(tree)
             elif type(tree[0]) == int:
@@ -69,10 +68,13 @@ class Track:
             try:
                 cmd, args = c[0][0], c[1:]
                 if cmd == "synth":
-                    pass
+                    self.synth = args[0]
                 elif cmd == "note-on":
                    self.i = self.i + 1
-                   osc = ('/s_new', self.synth, 1075+self.pc*100+self.i, 1, 0, 'freq', int(args[0])*100)
+                   if args[0] != None:
+                       osc = ('/s_new', self.synth, 1075+self.pc*100+self.i, 1, 0, 'freq', int(args[0])*100)
+                   else:
+                       osc = ('/s_new', self.synth, 1075+self.pc*100+self.i, 1, 0)
                    self.monastry.server.sendMsg(*osc)
             except Exception, e:
                 print e

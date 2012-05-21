@@ -12,6 +12,10 @@ class Monastry(Thread):
 
     def run(self):
         self.server = scosc.Controller(("localhost", 57110),verbose=True)
+
+        self.load_synth("wobble")
+        self.load_synth("windnoise")
+
         self.lock.acquire()
         while self.alive:
             self.lock.release()
