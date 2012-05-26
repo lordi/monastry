@@ -1,5 +1,10 @@
 python << endpython
-import sys, os
+import sys
+import os
+import logging
+
+logging.basicConfig(filename='monstry.log', level=logging.INFO)
+logging.info('Started')
 
 # TODO fix imports
 sys.path.append('.')
@@ -7,9 +12,12 @@ sys.path.append(os.path.expanduser('~/.vim/bundle/monastry'))
 sys.path.append('../monastry')
 
 mot = None
-from monastry import Monastry
-mot = Monastry()
-mot.start()
+try:
+    from monastry import Monastry
+    mot = Monastry()
+    mot.start()
+except e:
+    logging.exception(e)
 endpython
 
 function! MonastryUpdate()
@@ -17,6 +25,7 @@ function! MonastryUpdate()
 endfunction
 
 function! MonastryExit()
+    py logging.info('Requested finish')
     py if mot: mot.exit()
     qall
 endfunction
