@@ -84,6 +84,14 @@ class Track:
 class VimBufferTrack (Track):
     def __init__(self, monastry, buffer):
         self.buffer = buffer
+        Track.__init__(self, monastry)
+
+class LinesTrack (Track):
+    def __init__(self, monastry, lines):
+        self.buffer = lines
+        Track.__init__(self, monastry)
+        self.pc = 0
+        self.prev_pc = 0
 
 
 if __name__ == "__main__":
