@@ -8,17 +8,13 @@ both a low-level step-oriented tracker language and a plugin that turns vim into
 a music production studio with [live coding](http://en.wikipedia.org/wiki/Live_coding)
 capabilities.
 
-Run proof of concept
---------------------
+Installation
+------------
+
+With pathogen: Just copy the monastry folder to ~/.vim/bundle/
+
+Example run
+-----------
 
     SC_JACK_DEFAULT_OUTPUTS="system:playback_1,system:playback_2" scsynth -u 57110
-    vim --cmd ':so monastry.vim' mots/new.mot
-
-Some notes
-----------
-
- * http://brainacle.com/how-to-write-vim-plugins-with-python.html
- * https://trac.assembla.com/pkaudio/browser/bin/pkscmidi
- * Terminology: Main class == Monastry, each buffer == Scripture?
-
-
+    vim new.mot
