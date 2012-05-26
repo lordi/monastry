@@ -1,11 +1,13 @@
+
+# A track is a buffer.
 class Track:
-    def __init__(self, monastry, buffer):
+    def __init__(self, monastry):
         self.pc = 1
         self.prev_pc = 1
-        self.buffer = buffer
         self.synth = 'wobble'
         self.monastry = monastry
-        self.i = 1
+        import random
+        self.i = random.randint(1000,2000)
 
     def step(self):
         if self.pc > len(self.buffer):
@@ -78,6 +80,11 @@ class Track:
                    self.monastry.server.sendMsg(*osc)
             except Exception, e:
                 print e
+
+class VimBufferTrack (Track):
+    def __init__(self, monastry, buffer):
+        self.buffer = buffer
+
 
 if __name__ == "__main__":
     import doctest

@@ -1,8 +1,8 @@
 import time
 import os
 from threading import Thread, Lock
-import vim
 import scosc
+import logging
 from track import Track
 
 class Monastry(Thread):
@@ -13,8 +13,8 @@ class Monastry(Thread):
     def run(self):
         self.server = scosc.Controller(("localhost", 57110),verbose=True)
 
-        self.load_synth("wobble")
-        self.load_synth("windnoise")
+        from subprocess import call
+        call(['sclang', os.path.expanduser("~/.vim/bundle/monastry/mots/init.sc")])
 
         self.lock.acquire()
         while self.alive:
@@ -25,6 +25,7 @@ class Monastry(Thread):
         self.lock.release()
 
     def load_synth(self, name):
+        logging.info("load synth: "+ name)
         fpath = '~/src/monastry/sound/synths/{0}.scsyndef'.format(name)
         self.server.sendMsg('/d_load', os.path.expanduser(fpath))
 
@@ -33,10 +34,16 @@ class Monastry(Thread):
             b.step()
             b.interpret(b.buffer[b.pc - 1])
 
+    def add_track(self, track):
+        self.tracks.append(track)
+
     def add_buffer(self):
-        self.tracks.append(Track(self, vim.current.buffer))
+        " Add current vim buffer as a track "
+        import vim
+        self.add_track(VimBufferTrack(self, vim.current.buffer))
 
     def update_vim(self):
+        import vim
         self.lock.acquire()
         #vim.current.buffer.append("pc=%d at %s" % (data['pc'], time.ctime(time.time()) ))
         #print data
