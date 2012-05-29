@@ -11,7 +11,7 @@ capabilities.
 Installation
 ------------
 
-With pathogen: Just copy the monastry folder to ~/.vim/bundle/
+With pathogen: Just clone this repository to ~/.vim/bundle/monastry
 
 Example run
 -----------
