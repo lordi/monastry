@@ -35,11 +35,10 @@ def reduce_item(item, stack):
     return stack
 
 def reduce(tree, stack=None):
-    if stack == None: stack = []; print "-" * 40
-    print "Reducing", tree
+    if stack == None: stack = []
     for elem in tree:
         stack = reduce_item(elem, stack)
-        print elem, "=>", stack
+        #print elem, "=>", stack
     return stack
 
 def scan(data):
@@ -47,21 +46,25 @@ def scan(data):
     return nestedItems.parseString(data).asList().pop()
 
 def interpret(data):
-    print scan(data)
     return reduce(scan(data))
-
 
 import unittest
 
 class TestSequenceFunctions(unittest.TestCase):
-    def test_xxx(self):
+    def test_eval(self):
         self.assertEqual(interpret("(2 4 +)"), [6])
         self.assertEqual(interpret("(5 inc)"), [6])
         self.assertEqual(interpret("(5 (inc) eval)"), [6])
+
+    def test_times(self):
         self.assertEqual(interpret("(4 (2 +) 3 times)"), [10])
         self.assertEqual(interpret("(13 (inc) 5 times 2 +)"), [20])
 
-    def test_increase_only_if_lt_50(self): # inc-lt50 = dup 50 lt (inc) if
+    def test_if(self):
+        self.assertEqual(interpret("(20 1 (10 +) if)"), [30])
+        self.assertEqual(interpret("(20 0 (10 +) if)"), ['20'])
+
+        # inc-lt50 = dup 50 lt (inc) if
         self.assertEqual(interpret("(45 (dup 50 lt (inc) if) eval)"), [46])
         self.assertEqual(interpret("(50 (dup 50 lt (inc) if) eval)"), ['50'])
         self.assertEqual(interpret("(45 (dup 50 lt (inc) if) 10 times)"), [50])
