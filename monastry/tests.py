@@ -77,6 +77,10 @@ class TestInterpreter(unittest.TestCase):
         self.assertEqual(self.i.interpret("(10 12 swap lt)"), [0])
         self.assertEqual(self.i.interpret("(50 (inc) swap swap eval)"), [51])
 
+    def test_default_stack(self):
+        self.assertEqual(self.i.interpret("(4 +)", [20]), [24])
+        self.assertEqual(self.i.interpret("(4 swap eval)", [20, '+']), [24])
+
     def test_drop(self):
         self.assertEqual(self.i.interpret("(10 12 14 drop +)"), [22])
 
