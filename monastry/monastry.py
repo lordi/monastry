@@ -1,42 +1,71 @@
 import time
 import os
 from threading import Thread, Lock
-import scosc
 import logging
 from track import Track
+from interpret import Interpreter
+
+class MonastryBackend:
+    def __init__(self):
+        pass
+
+    def start(monastry):
+        pass
+
+    def stop():
+        pass
+
+import scosc
+class SuperCollider (MonastryBackend):
+    def __init__(self):
+        pass
+
+    def start(self, monastry):
+        from subprocess import call
+        self.server = scosc.Controller(("localhost", 57110),verbose=True)
+        call(['sclang', os.path.expanduser(\
+                "~/.vim/bundle/monastry/mots/init.sc")])
 
 class Monastry(Thread):
     tracks = []
     alive = True
     lock = Lock()
+    backend = None
+    bpm = 120 # beats per minute
+    spb = 4   # steps per beats
+    steps = 0   # exit after this number of steps if gt 0
+
+    def __init__(self, backend):
+        self.backend = backend
+        self.interpreter = Interpreter()
+        Thread.__init__(self)
 
     def run(self):
-        self.server = scosc.Controller(("localhost", 57110),verbose=True)
-
-        from subprocess import call
-        call(['sclang', os.path.expanduser("~/.vim/bundle/monastry/mots/init.sc")])
-
         self.lock.acquire()
+        self.backend.start(self)
         while self.alive:
             self.lock.release()
-            time.sleep(0.2)
+            if self.bpm > 0 and self.spb > 0:
+                time.sleep(60.0/self.bpm/self.spb)
             self.lock.acquire()
-            self.step()
+            try:
+                self.step()
+            except Exception, e:
+                print e
+                self.alive = False
         self.lock.release()
-
-    def load_synth(self, name):
-        logging.info("load synth: "+ name)
-        fpath = '~/src/monastry/sound/synths/{0}.scsyndef'.format(name)
-        self.server.sendMsg('/d_load', os.path.expanduser(fpath))
 
     def step(self):
         for b in self.tracks:
             b.step()
             b.interpret(b.buffer[b.pc - 1])
+        if self.steps > 0:
+            if self.steps == 1:
+                self.alive = False
+            self.steps -= 1
 
     def add_track(self, track):
         self.tracks.append(track)
-
     def add_buffer(self):
         " Add current vim buffer as a track "
         import vim

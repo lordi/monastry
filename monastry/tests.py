@@ -1,18 +1,56 @@
 import unittest
 from interpret import Interpreter
+from monastry import Monastry, MonastryBackend
+from track import LinesTrack
+
+class TestMonastry(unittest.TestCase):
+    class TestBackend(MonastryBackend):
+        output = []
+        def start(self, monastry):
+            def _print(s):
+                self.output.append(s.pop())
+            monastry.interpreter.add_builtin('print', _print)
+
+    def test_linestrack(self):
+        import time
+        be = TestMonastry.TestBackend()
+        mot = Monastry(be)
+        mot.bpm = -1
+        mot.steps = 5
+        mot.add_track(LinesTrack(mot, [
+            '(6 print)',
+            '(6 2 + print)',
+            '(6 2 mul print)',
+            '(12 wrap) (13)',
+            '(2 +) (print)',
+            ]))
+        mot.start()
+        time.sleep(0.1)
+        mot.exit()
+        time.sleep(0.1)
+        self.assertEqual(be.output, [6,8,12,14])
+
 
 class TestInterpreter(unittest.TestCase):
     def setUp(self):
         self.i = Interpreter()
 
-    def test_arithmetic(self):
+    def test_parenthesis(self):
+        self.assertEqual(self.i.interpret(""), [])
         self.assertEqual(self.i.interpret("()"), [])
         self.assertEqual(self.i.interpret("(4)"), [4])
         self.assertEqual(self.i.interpret("(4 2)"), [4, 2])
+        self.assertEqual(self.i.interpret("(4) (6) (+)"), [10])
+
+    def test_arithmetic(self):
         self.assertEqual(self.i.interpret("(4 2 +)"), [6])
         self.assertEqual(self.i.interpret("(4 2 -)"), [2])
         self.assertEqual(self.i.interpret("(5 inc)"), [6])
         self.assertEqual(self.i.interpret("(7 dec)"), [6])
+        self.assertEqual(self.i.interpret("(6 4 mod)"), [2])
+
+    def test_infix(self):
+        self.assertEqual(self.i.interpret("(6 (+) 2 swap eval)"), [8])
 
     def test_eval(self):
         self.assertEqual(self.i.interpret("(5 (inc) eval)"), [6])

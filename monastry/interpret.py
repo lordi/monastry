@@ -12,6 +12,9 @@ class Interpreter:
 
             '+':    _2ary(lambda x, y: y + x),
             '-':    _2ary(lambda x, y: y - x),
+            'mul':  _2ary(lambda x, y: y * x),
+            'div':  _2ary(lambda x, y: int(y // x)),
+            'mod':  _2ary(lambda x, y: int(y % x)),
             'eq':   _2ary(lambda x, y: 1 if x == y else 0),
             'lt':   _2ary(lambda x, y: 1 if y < x else 0),
             'dup':  lambda s: s.append(s[-1]),
@@ -24,7 +27,7 @@ class Interpreter:
 
     def add_builtin(self, name, func):
         """
-        
+
         Add a builtin function:
 
         @param func a function that recieves a stack to manipulate
@@ -64,8 +67,12 @@ class Interpreter:
     def scan(self, data):
         # TODO convert ints during
         nestedItems = nestedExpr()
-        return nestedItems.parseString(data).asList().pop()
+        return nestedItems.parseString("({0})".format(data)).asList().pop()
 
-    def interpret(self, data):
-        return self.reduce(self.scan(data))
+    def interpret(self, data, stack = None):
+        if stack == None: stack = []
+        for tree in self.scan(data):
+            if type(tree) == list:
+                stack = self.reduce(tree, stack)
+        return stack
 
