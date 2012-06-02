@@ -9,22 +9,11 @@ class MonastryBackend:
     def __init__(self):
         pass
 
-    def start(monastry):
-        pass
-
-    def stop():
-        pass
-
-import scosc
-class SuperCollider (MonastryBackend):
-    def __init__(self):
-        pass
-
     def start(self, monastry):
-        from subprocess import call
-        self.server = scosc.Controller(("localhost", 57110),verbose=True)
-        call(['sclang', os.path.expanduser(\
-                "~/.vim/bundle/monastry/mots/init.sc")])
+        pass
+
+    def stop(self):
+        pass
 
 class Monastry(Thread):
     tracks = []
@@ -66,6 +55,7 @@ class Monastry(Thread):
 
     def add_track(self, track):
         self.tracks.append(track)
+
     def add_buffer(self):
         " Add current vim buffer as a track "
         import vim
