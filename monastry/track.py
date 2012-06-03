@@ -23,10 +23,12 @@ class Track:
 
     def interpret(self, line):
         newstack = []
+        self.monastry.interpreter.set_alias('pc>', [self.pc])
         for term in self.stack:
             if type(term) == list:
                 newstack = self.monastry.interpreter.reduce(term, newstack)
         self.stack = self.monastry.interpreter.interpret(line, newstack)
+        print "> ", self.stack
 
 class VimBufferTrack (Track):
     def __init__(self, monastry, buffer):
@@ -39,7 +41,6 @@ class LinesTrack (Track):
         Track.__init__(self, monastry)
         self.pc = 0
         self.prev_pc = 0
-
 
 if __name__ == "__main__":
     import doctest

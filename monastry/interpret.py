@@ -22,6 +22,11 @@ class Interpreter:
             'swap': _swap
     }
 
+    aliases = {
+            # <f> <t> delay = delay function f by t steps
+            'delay': [['wrap'], 'swap', 'dec', 'times'],
+    }
+
     def __init__(self):
         pass
 
@@ -34,6 +39,15 @@ class Interpreter:
         """
         self.builtins[name] = func
 
+    def set_alias(self, name, tree):
+        """
+
+        Add an alias
+
+        """
+        assert type(tree) == list, "alias replacement must be list"
+        self.aliases[name] = tree
+
     def reduce_item(self, item, stack):
         try:
             if type(item) == str:
@@ -42,6 +56,9 @@ class Interpreter:
             pass
         if type(item) == str and self.builtins.has_key(item):
             self.builtins.get(item)(stack)
+        elif type(item) == str and self.aliases.has_key(item):
+            tree = self.aliases.get(item)
+            stack = self.reduce(tree, stack)
         elif item == 'if':
             func = stack.pop()
             if int(stack.pop()) == 1: self.reduce(func, stack)

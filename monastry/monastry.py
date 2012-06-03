@@ -18,7 +18,6 @@ class MonastryBackend:
 class Monastry(Thread):
     tracks = []
     alive = True
-    lock = Lock()
     backend = None
     bpm = 120 # beats per minute
     spb = 4   # steps per beats
@@ -27,6 +26,8 @@ class Monastry(Thread):
     def __init__(self, backend):
         self.backend = backend
         self.interpreter = Interpreter()
+        self.tracks = []
+        self.lock = Lock()
         Thread.__init__(self)
 
     def run(self):

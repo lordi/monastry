@@ -2,6 +2,7 @@ import unittest
 from interpret import Interpreter
 from monastry import Monastry, MonastryBackend
 from track import LinesTrack
+import time
 
 class TestMonastry(unittest.TestCase):
     class TestBackend(MonastryBackend):
@@ -11,25 +12,49 @@ class TestMonastry(unittest.TestCase):
                 self.output.append(s.pop())
             monastry.interpreter.add_builtin('print', _print)
 
-    def test_linestrack(self):
-        import time
+    def assertOutput(self, input, output):
         be = TestMonastry.TestBackend()
         mot = Monastry(be)
         mot.bpm = -1
-        mot.steps = 5
-        mot.add_track(LinesTrack(mot, [
+        mot.steps = len(input)
+        mot.add_track(LinesTrack(mot, input))
+        print "starting monastry:", mot.steps, len(mot.tracks)
+        mot.start()
+        time.sleep(0.1)
+        mot.exit()
+        del mot
+        time.sleep(1)
+        self.assertEqual(be.output, output)
+
+    def test_linestrack(self):
+        self.assertOutput([
+            '(6 print)',
+            '',
+            ''
+            ], [6])
+
+        print "---"
+
+        self.assertOutput([
+            '',
+            ''
+            ], [])
+
+        #self.assertOutput([
+        #    '(pc> print) ((pc> print) 2 delay)',
+        #    '',
+        #    '',
+        #    '',
+        #    ], [1, 3])
+
+    def xxxx():
+        self.assertOutput([
             '(6 print)',
             '(6 2 + print)',
             '(6 2 mul print)',
             '(12 wrap) (13)',
             '(2 +) (print)',
-            ]))
-        mot.start()
-        time.sleep(0.1)
-        mot.exit()
-        time.sleep(0.1)
-        self.assertEqual(be.output, [6,8,12,14])
-
+            ], [6, 8, 12, 14])
 
 class TestInterpreter(unittest.TestCase):
     def setUp(self):
