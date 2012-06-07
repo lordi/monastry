@@ -25,6 +25,14 @@ class TestMonastry(unittest.TestCase):
         time.sleep(0.01)
         self.assertEqual(be.output, output)
 
+    def test_combine_operator(self):
+        self.assertOutput([
+            '(6 print)',
+            '( [ (7) (print) ] eval )',
+            '( [ [ (pc>) (print) ] wrap (eval) ] eval)',
+            ''
+            ], [6, 7, 3])
+
     def test_linestrack(self):
         self.assertOutput([
             '(6 print)',
@@ -37,12 +45,25 @@ class TestMonastry(unittest.TestCase):
             ''
             ], [])
 
-        #self.assertOutput([
-        #    '(pc> print) ((pc> print) 2 delay)',
-        #    '',
-        #    '',
-        #    '',
-        #    ], [1, 3])
+        self.assertOutput([
+            '(pc> print)',
+            '(pc> print)'
+            ], [1, 2])
+
+    def test_delay(self):
+        self.assertOutput([
+            '(pc> print) ((pc> print) 2 delay)',
+            '',
+            '',
+            '',
+            ], [1, 3])
+
+        self.assertOutput([
+            '( 2 [ pc> wrap (print) ] 3 delay )',
+            '',
+            '( pc> print )',
+            '',
+            ], [3, 1])
 
     def test_cplx(self):
         self.assertOutput([

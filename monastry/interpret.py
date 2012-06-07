@@ -4,6 +4,15 @@ class Interpreter:
     def _1ary(func): return lambda s: s.append(func(s.pop()))
     def _2ary(func): return lambda s: s.append(func(s.pop(), s.pop()))
     def _swap(s): top = s.pop(); snd = s.pop(); s.append(top); s.append(snd)
+    def _combine(s):
+        elem = s.pop()
+        lst = []
+        while elem != '[':
+            lst.append('eval')
+            lst.append(elem)
+            elem = s.pop()
+        lst.reverse()
+        s.append(lst)
 
     builtins = {
             'inc':  _1ary(lambda x: x + 1),
@@ -17,13 +26,15 @@ class Interpreter:
             'mod':  _2ary(lambda x, y: int(y % x)),
             'eq':   _2ary(lambda x, y: 1 if x == y else 0),
             'lt':   _2ary(lambda x, y: 1 if y < x else 0),
+            ']':    _combine,
             'dup':  lambda s: s.append(s[-1]),
             'drop': lambda s: s.pop(),
             'swap': _swap
     }
 
     aliases = {
-            # <f> <t> delay = delay function f by t steps
+            # delay function f by t steps
+            # <f> <t> delay := (wrap) swap dec times
             'delay': [['wrap'], 'swap', 'dec', 'times'],
     }
 
