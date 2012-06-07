@@ -28,7 +28,7 @@ class Track:
             if type(term) == list:
                 newstack = self.monastry.interpreter.reduce(term, newstack)
         self.stack = self.monastry.interpreter.interpret(line, newstack)
-        print "> ", self.stack
+        #print "> ", self.stack
 
 class VimBufferTrack (Track):
     def __init__(self, monastry, buffer):

@@ -6,8 +6,8 @@ import time
 
 class TestMonastry(unittest.TestCase):
     class TestBackend(MonastryBackend):
-        output = []
         def start(self, monastry):
+            self.output = []
             def _print(s):
                 self.output.append(s.pop())
             monastry.interpreter.add_builtin('print', _print)
@@ -18,12 +18,11 @@ class TestMonastry(unittest.TestCase):
         mot.bpm = -1
         mot.steps = len(input)
         mot.add_track(LinesTrack(mot, input))
-        print "starting monastry:", mot.steps, len(mot.tracks)
         mot.start()
-        time.sleep(0.1)
+        time.sleep(0.01)
         mot.exit()
         del mot
-        time.sleep(1)
+        time.sleep(0.01)
         self.assertEqual(be.output, output)
 
     def test_linestrack(self):
@@ -32,8 +31,6 @@ class TestMonastry(unittest.TestCase):
             '',
             ''
             ], [6])
-
-        print "---"
 
         self.assertOutput([
             '',
@@ -47,7 +44,7 @@ class TestMonastry(unittest.TestCase):
         #    '',
         #    ], [1, 3])
 
-    def xxxx():
+    def test_cplx(self):
         self.assertOutput([
             '(6 print)',
             '(6 2 + print)',
