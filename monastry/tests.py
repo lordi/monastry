@@ -102,6 +102,9 @@ class TestInterpreter(unittest.TestCase):
     def test_wrap(self):
         self.assertEqual(self.i.interpret("(2 wrap eval)"), [2])
         self.assertEqual(self.i.interpret("((5 inc) wrap eval eval)"), [6])
+        self.assertEqual(self.i.interpret("(2 4 wrap2 eval)"), [2, 4])
+        self.assertEqual(self.i.interpret("(1 2 3 4 wrap3)"), [1, [2, 3, 4]])
+        self.assertEqual(self.i.interpret("(1 1 1 2 (inc) eval wrap2 eval)"), [1,1,1,3])
 
     def test_times(self):
         self.assertEqual(self.i.interpret("(4 (2 +) 3 times)"), [10])

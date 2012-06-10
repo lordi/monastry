@@ -3,6 +3,7 @@ from pyparsing import *
 class Interpreter:
     def _1ary(func): return lambda s: s.append(func(s.pop()))
     def _2ary(func): return lambda s: s.append(func(s.pop(), s.pop()))
+    def _3ary(func): return lambda s: s.append(func(s.pop(), s.pop(), s.pop()))
     def _swap(s): top = s.pop(); snd = s.pop(); s.append(top); s.append(snd)
     def _combine(s):
         elem = s.pop()
@@ -17,7 +18,10 @@ class Interpreter:
     builtins = {
             'inc':  _1ary(lambda x: x + 1),
             'dec':  _1ary(lambda x: x - 1),
-            'wrap': _1ary(lambda x: [x]),
+
+            'wrap':  _1ary(lambda x: [x]),
+            'wrap2': _2ary(lambda x, y: [y, x]),
+            'wrap3': _3ary(lambda x, y, z: [z, y, x]),
 
             '+':    _2ary(lambda x, y: y + x),
             '-':    _2ary(lambda x, y: y - x),
