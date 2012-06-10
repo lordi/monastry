@@ -4,7 +4,9 @@ class Interpreter:
     def _1ary(func): return lambda s: s.append(func(s.pop()))
     def _2ary(func): return lambda s: s.append(func(s.pop(), s.pop()))
     def _3ary(func): return lambda s: s.append(func(s.pop(), s.pop(), s.pop()))
-    def _swap(s): top = s.pop(); snd = s.pop(); s.append(top); s.append(snd)
+    def _swap(s): s[-1], s[-2] = s[-2], s[-1]
+    def _swap2(s): s[-1], s[-3] = s[-3], s[-1]
+    def _swap3(s): s[-1], s[-4] = s[-4], s[-1]
     def _combine(s):
         elem = s.pop()
         lst = []
@@ -36,13 +38,23 @@ class Interpreter:
             ']':    _combine,
             'dup':  lambda s: s.append(s[-1]),
             'drop': lambda s: s.pop(),
-            'swap': _swap
+            'swap': _swap,
+            'swap2': _swap2,
+            'swap3': _swap3,
     }
 
     aliases = {
+            # square := dup mul
+            'square': ['dup', 'mul'],
+
             # delay function f by t steps
             # <f> <t> delay := (wrap) swap dec times
             'delay': [['wrap'], 'swap', 'dec', 'times'],
+
+            # Countdown function (yay, first occurance of recursion in monastry. little sloppy, tho)
+            # <<c> f> <t> countdown := ....
+            'countdown': ['dup', '0', 'gt', ['_countdown', 'wrap3'], ['drop', 'drop'], 'if-else'],
+            '_countdown': ['dup', 'dec', 'swap', 'swap2', 'dup', 'swap3', 'swap', 'eval', ['countdown'], 'eval', 'wrap3'],
     }
 
     def __init__(self):
@@ -80,6 +92,13 @@ class Interpreter:
         elif item == 'if':
             func = stack.pop()
             if int(stack.pop()) == 1: self.reduce(func, stack)
+        elif item == 'if-else':
+            elsefunc = stack.pop()
+            func = stack.pop()
+            if int(stack.pop()) == 1:
+                self.reduce(func, stack)
+            else:
+                self.reduce(elsefunc, stack)
         elif item == 'times':
             times = int(stack.pop())
             insert = stack.pop()

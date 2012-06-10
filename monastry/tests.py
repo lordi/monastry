@@ -65,6 +65,15 @@ class TestMonastry(unittest.TestCase):
             '',
             ], [3, 1])
 
+    def test_countdown(self):
+        self.assertOutput(
+            ['((print) 4 countdown)', '', '', '', '', '', ''],
+            [4, 3, 2, 1])
+
+        self.assertOutput(
+            ['((square print) 4 countdown)', '', '', '', '', ''],
+            [16, 9, 4, 1])
+
     def test_cplx(self):
         self.assertOutput([
             '(6 print)',

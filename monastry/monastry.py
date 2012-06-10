@@ -50,9 +50,9 @@ class Monastry(Thread):
             b.step()
             b.interpret(b.buffer[b.pc - 1])
         if self.steps > 0:
-            if self.steps == 1:
-                self.alive = False
             self.steps -= 1
+            if self.steps == 0:
+                self.alive = False
 
     def add_track(self, track):
         self.tracks.append(track)
