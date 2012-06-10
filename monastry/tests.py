@@ -111,6 +111,13 @@ class TestInterpreter(unittest.TestCase):
         self.assertEqual(self.i.interpret("(13 (inc) 5 times 2 +)"), [20])
 
     def test_if(self):
+        self.assertEqual(self.i.interpret("(1 5 lt)"), [1])
+        self.assertEqual(self.i.interpret("(1 5 gt)"), [0])
+        self.assertEqual(self.i.interpret("(1 5 eq)"), [0])
+        self.assertEqual(self.i.interpret("(5 5 eq)"), [1])
+        self.assertEqual(self.i.interpret("(5 5 gt)"), [0])
+        self.assertEqual(self.i.interpret("(5 5 gte)"), [1])
+
         self.assertEqual(self.i.interpret("(20 1 (10 +) if)"), [30])
         self.assertEqual(self.i.interpret("(20 0 (10 +) if)"), [20])
 
