@@ -18,6 +18,7 @@ class Interpreter:
         s.append(lst)
 
     builtins = {
+            'nop':  lambda s: s,
             'inc':  _1ary(lambda x: x + 1),
             'dec':  _1ary(lambda x: x - 1),
 
@@ -53,8 +54,11 @@ class Interpreter:
 
             # Countdown function (yay, first occurance of recursion in monastry. little sloppy, tho)
             # <<c> f> <t> countdown := ....
-            'countdown': ['dup', '0', 'gt', ['_countdown', 'wrap3'], ['drop', 'drop'], 'if-else'],
+            #'countdown': ['dup', '0', 'gt', ['_countdown', 'eval', 'wrap3'], ['drop', 'drop'], 'if-else'],
+            #'_countdown': ['dup', 'dec', 'swap', 'swap2', 'dup', 'swap3', 'swap', 'eval', ['countdown']],
+            'countdown': ['dup', '0', 'gt', ['_countdown'], ['drop', 'drop'], 'if-else', ['nop'], ['nop'], ['nop']],
             '_countdown': ['dup', 'dec', 'swap', 'swap2', 'dup', 'swap3', 'swap', 'eval', ['countdown'], 'eval', 'wrap3'],
+
     }
 
     def __init__(self):
