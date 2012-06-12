@@ -53,12 +53,15 @@ class Interpreter:
             'delay': [['wrap'], 'swap', 'dec', 'times'],
 
             # Countdown function (yay, first occurance of recursion in monastry. little sloppy, tho)
-            # <<c> f> <t> countdown := ....
-            #'countdown': ['dup', '0', 'gt', ['_countdown', 'eval', 'wrap3'], ['drop', 'drop'], 'if-else'],
-            #'_countdown': ['dup', 'dec', 'swap', 'swap2', 'dup', 'swap3', 'swap', 'eval', ['countdown']],
-            'countdown': ['dup', '0', 'gt', ['_countdown'], ['drop', 'drop'], 'if-else', ['nop'], ['nop'], ['nop']],
-            '_countdown': ['dup', 'dec', 'swap', 'swap2', 'dup', 'swap3', 'swap', 'eval', ['countdown'], 'eval', 'wrap3'],
+            # <f> <t> countdown := ....
 
+            # implementation with pattern matching:
+            # 0 countdown := drop drop
+            # countdown = dup dec swap swap2 dup swap3 swap eval =countdown wrap3
+
+            # implementation without pattern matching:
+            'countdown': ['dup', '0', 'gt', ['_countdown'], ['drop', 'drop'], 'if-else'],
+            '_countdown': ['dup', 'dec', 'swap', 'swap2', 'dup', 'swap3', 'swap', 'eval', '=countdown', 'wrap3'],
     }
 
     def __init__(self):
@@ -93,6 +96,8 @@ class Interpreter:
         elif type(item) == str and self.aliases.has_key(item):
             tree = self.aliases.get(item)
             stack = self.reduce(tree, stack)
+        elif type(item) == str and item[0] == '=':
+            stack.append(item[1:])
         elif item == 'if':
             func = stack.pop()
             if int(stack.pop()) == 1: self.reduce(func, stack)

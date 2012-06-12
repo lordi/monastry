@@ -74,6 +74,15 @@ class TestMonastry(unittest.TestCase):
             ['((square print) 4 countdown)', '', '', '', '', ''],
             [16, 9, 4, 1])
 
+        self.assertOutput(
+            [   '((square print) 4 countdown) ((100 mul print) 4 countdown)',
+                '',
+                '(666 print)',
+                '',
+                '',
+                ''  ],
+            [16, 400, 9, 300, 4, 200, 666, 1, 100])
+
     def test_cplx(self):
         self.assertOutput([
             '(6 print)',
