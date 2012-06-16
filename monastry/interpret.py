@@ -44,25 +44,22 @@ class Interpreter:
             'swap3': _swap3,
     }
 
-    aliases = {
-            # square := dup mul
-            'square': ['dup', 'mul'],
+    aliases = [
+            # replace number by its square
+            # <n> square = dup mul
+            (['square'], ['dup', 'mul']),
 
             # delay function f by t steps
-            # <f> <t> delay := (wrap) swap dec times
-            'delay': [['wrap'], 'swap', 'dec', 'times'],
+            # <f> <t> delay = (wrap) swap dec times
+            (['delay'], [['wrap'], 'swap', 'dec', 'times']),
 
-            # Countdown function (yay, first occurance of recursion in monastry. little sloppy, tho)
-            # <f> <t> countdown := ....
-
-            # implementation with pattern matching:
-            # 0 countdown := drop drop
-            # countdown = dup dec swap swap2 dup swap3 swap eval =countdown wrap3
-
-            # implementation without pattern matching:
-            'countdown': ['dup', '0', 'gt', ['_countdown'], ['drop', 'drop'], 'if-else'],
-            '_countdown': ['dup', 'dec', 'swap', 'swap2', 'dup', 'swap3', 'swap', 'eval', '=countdown', 'wrap3'],
-    }
+            # countdown: call function f for the next n lines
+            # top of stack decreased by 1 each call
+            # <f> 0 countdown = drop drop
+            # <f> <n> countdown = dup dec swap swap2 dup swap3 swap eval =countdown wrap3
+            ([0, 'countdown'], ['drop', 'drop']),
+            (['countdown'], ['dup', 'dec', 'swap', 'swap2', 'dup', 'swap3', 'swap', 'eval', '=countdown', 'wrap3']),
+    ]
 
     def __init__(self):
         pass
@@ -83,7 +80,23 @@ class Interpreter:
 
         """
         assert type(tree) == list, "alias replacement must be list"
-        self.aliases[name] = tree
+        self.aliases = filter(lambda (al, t): al != [name], self.aliases)
+        self.aliases.append(([name], tree))
+
+    def reduce_alias(self, item, stack):
+        if type(item) != str:
+            return False
+        hits = filter(lambda (alias, _tree): alias[-1] == item, self.aliases)
+        for alias, tree in hits:
+            if len(alias) > 1:
+                l = len(alias)
+                if alias[:-1] == stack[-(l-1):]:
+                    stack = self.reduce(tree, stack)
+                    return True
+            else:
+                stack = self.reduce(tree, stack)
+                return True
+        return False
 
     def reduce_item(self, item, stack):
         try:
@@ -93,9 +106,8 @@ class Interpreter:
             pass
         if type(item) == str and self.builtins.has_key(item):
             self.builtins.get(item)(stack)
-        elif type(item) == str and self.aliases.has_key(item):
-            tree = self.aliases.get(item)
-            stack = self.reduce(tree, stack)
+        elif self.reduce_alias(item, stack):
+            print "reduced with alias", item
         elif type(item) == str and item[0] == '=':
             stack.append(item[1:])
         elif item == 'if':
@@ -139,3 +151,7 @@ class Interpreter:
                 stack = self.reduce(tree, stack)
         return stack
 
+if __name__ == "__main__":
+    i = Interpreter()
+    i.reduce_alias('countdown', [[], 0])
+    i.reduce_alias('countdown', [[], 2])
