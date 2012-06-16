@@ -19,10 +19,10 @@ class TestMonastry(unittest.TestCase):
         mot.steps = len(input)
         mot.add_track(LinesTrack(mot, input))
         mot.start()
-        time.sleep(0.01)
+        time.sleep(0.1)
         mot.exit()
         del mot
-        time.sleep(0.01)
+        time.sleep(0.1)
         self.assertEqual(be.output, output)
 
     def test_combine_operator(self):
@@ -83,6 +83,14 @@ class TestMonastry(unittest.TestCase):
                 ''  ],
             [16, 400, 9, 300, 4, 200, 666, 1, 100])
 
+    def test_sawtooth(self):
+        # sawtooth
+        self.assertOutput(
+            ['((0 swap - 4 mod print) 12 countdown)', '', '', '',
+                '', '', '', '',
+                '', '', '', '', ''],
+           [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3])
+    
     def test_cplx(self):
         self.assertOutput([
             '(6 print)',
