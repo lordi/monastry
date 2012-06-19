@@ -45,6 +45,10 @@ class Interpreter:
     }
 
     aliases = [
+            # jump to line n
+            # <n> jump = >pc
+            (['jump'], ['>pc']),
+
             # replace number by its square
             # <n> square = dup mul
             (['square'], ['dup', 'mul']),
@@ -59,6 +63,11 @@ class Interpreter:
             # <f> <n> countdown = dup dec swap swap2 dup swap3 swap eval =countdown wrap3
             ([0, 'countdown'], ['drop', 'drop']),
             (['countdown'], ['dup', 'dec', 'swap', 'swap2', 'dup', 'swap3', 'swap', 'eval', '=countdown', 'wrap3']),
+
+            # repeat: repeat the next <n> lines for <t> times
+            # <n> <t> repeat = 
+            ([0, 'repeat'], ['drop', 'drop']),
+            (['repeat'], ['pc>', 'print', '5', '>pc'])
     ]
 
     def __init__(self):
@@ -107,7 +116,8 @@ class Interpreter:
         if type(item) == str and self.builtins.has_key(item):
             self.builtins.get(item)(stack)
         elif self.reduce_alias(item, stack):
-            print "reduced with alias", item
+            #print "reduced with alias", item
+            pass
         elif type(item) == str and item[0] == '=':
             stack.append(item[1:])
         elif item == 'if':

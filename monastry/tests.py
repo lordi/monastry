@@ -33,6 +33,18 @@ class TestMonastry(unittest.TestCase):
             ''
             ], [6, 7, 3])
 
+    def test_jump(self):
+        self.assertOutput([
+            '',                     # 1
+            '(A print)',            # 2
+            '(B print) (5 jump)',   # 3
+            '(C print)',            # 4
+            '(D print)',            # 5
+            '(D print)',            # 6
+            '',                     # 7
+            ''
+            ], ['A', 'B', 'D'])
+
     def test_linestrack(self):
         self.assertOutput([
             '(6 print)',
@@ -90,7 +102,21 @@ class TestMonastry(unittest.TestCase):
                 '', '', '', '',
                 '', '', '', '', ''],
            [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3])
-    
+
+    def test_loop(self):
+        self.assertOutput(
+            ['(4 3 repeat)',
+                '(A print)',
+                '(B print)',
+                '(C print)',
+                '(D print)',
+                '(E print)',
+                '' ],
+           ['A', 'B', 'C', 'D',
+               'A', 'B', 'C', 'D',
+               'A', 'B', 'C', 'D',
+               'E'])
+       
     def test_cplx(self):
         self.assertOutput([
             '(6 print)',

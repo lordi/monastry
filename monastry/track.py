@@ -23,11 +23,17 @@ class Track:
 
     def interpret(self, line):
         newstack = []
+        pcs = []
+        def set_pc(s):
+            pcs.append(s.pop())
         self.monastry.interpreter.set_alias('pc>', [self.pc])
+        self.monastry.interpreter.add_builtin('>pc', set_pc)
         for term in self.stack:
             if type(term) == list:
                 newstack = self.monastry.interpreter.reduce(term, newstack)
         self.stack = self.monastry.interpreter.interpret(line, newstack)
+        if len(pcs) > 0:
+            self.pc = pcs[-1]
         #print "> ", self.stack
 
 class VimBufferTrack (Track):
