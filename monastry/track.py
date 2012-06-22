@@ -33,8 +33,8 @@ class Track:
                 newstack = self.monastry.interpreter.reduce(term, newstack)
         self.stack = self.monastry.interpreter.interpret(line, newstack)
         if len(pcs) > 0:
-            self.pc = pcs[-1]
-        #print "> ", self.stack
+            self.pc = pcs[-1] - 1 # decr by 1 because it'll be inc afterwards
+        print ">", self.stack, " next: ", self.pc
 
 class VimBufferTrack (Track):
     def __init__(self, monastry, buffer):

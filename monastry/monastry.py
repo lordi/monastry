@@ -50,6 +50,7 @@ class Monastry(Thread):
             b.step()
             b.interpret(b.buffer[b.pc - 1])
         if self.steps > 0:
+            #print "steps left:", self.steps
             self.steps -= 1
             if self.steps == 0:
                 self.alive = False

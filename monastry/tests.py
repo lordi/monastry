@@ -36,14 +36,28 @@ class TestMonastry(unittest.TestCase):
     def test_jump(self):
         self.assertOutput([
             '',                     # 1
-            '(A print)',            # 2
+            '',                     # 2
             '(B print) (5 jump)',   # 3
             '(C print)',            # 4
             '(D print)',            # 5
-            '(D print)',            # 6
+            '(E print)',            # 6
             '',                     # 7
             ''
-            ], ['A', 'B', 'D'])
+            ], ['B', 'D', 'E'])
+
+        # endless loop with relative jump
+        self.assertOutput([
+            '(Z print)',
+            '(A print)',
+            '(B print)',
+            '(2 jump-back)',
+            '(C print)',
+            '',
+            '',
+            '',
+            ''
+            ], ['Z', 'A', 'B', 'A', 'B', 'A', 'B'])
+
 
     def test_linestrack(self):
         self.assertOutput([
@@ -111,6 +125,15 @@ class TestMonastry(unittest.TestCase):
                 '(C print)',
                 '(D print)',
                 '(E print)',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
                 '' ],
            ['A', 'B', 'C', 'D',
                'A', 'B', 'C', 'D',

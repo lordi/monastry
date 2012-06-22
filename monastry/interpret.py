@@ -49,6 +49,15 @@ class Interpreter:
             # <n> jump = >pc
             (['jump'], ['>pc']),
 
+            # jump n lines forward
+            # <n> rel-jump = pc> + >pc
+            (['jump-forward'], ['pc>', '+', '>pc']),
+
+            # jump n lines backward
+            # <n> rel-jump = pc> swap - >pc
+            (['jump-back'], ['pc>', 'swap', '-', '>pc']),
+
+
             # replace number by its square
             # <n> square = dup mul
             (['square'], ['dup', 'mul']),
@@ -67,7 +76,9 @@ class Interpreter:
             # repeat: repeat the next <n> lines for <t> times
             # <n> <t> repeat = 
             ([0, 'repeat'], ['drop', 'drop']),
-            (['repeat'], ['pc>', 'print', '5', '>pc'])
+            (['repeat'], ['swap',
+                 ['3', 'jump-back'], 'swap', 'delay',
+                 [4, 2, 'repeat'], 4, 'delay'])
     ]
 
     def __init__(self):
