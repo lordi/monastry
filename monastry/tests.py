@@ -1,6 +1,7 @@
 import unittest
 from interpret import Interpreter
-from monastry import Monastry, MonastryBackend
+from monastry import Monastry
+from backends import MonastryBackend
 from track import LinesTrack
 import time
 

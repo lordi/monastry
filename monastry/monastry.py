@@ -5,16 +5,6 @@ import logging
 from track import Track
 from interpret import Interpreter
 
-class MonastryBackend:
-    def __init__(self):
-        pass
-
-    def start(self, monastry):
-        pass
-
-    def stop(self):
-        pass
-
 class Monastry(Thread):
     tracks = []
     alive = True

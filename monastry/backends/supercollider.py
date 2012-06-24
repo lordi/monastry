@@ -1,5 +1,7 @@
 import scosc
+import os
 from subprocess import call
+from base import MonastryBackend
 
 class SuperColliderBackend (MonastryBackend):
     def __init__(self):
