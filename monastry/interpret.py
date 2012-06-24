@@ -16,6 +16,7 @@ class Interpreter:
             elem = s.pop()
         lst.reverse()
         s.append(lst)
+    def _print(s): print s[-1]
 
     builtins = {
             'nop':  lambda s: s,
@@ -42,6 +43,8 @@ class Interpreter:
             'swap': _swap,
             'swap2': _swap2,
             'swap3': _swap3,
+
+            'print': _print
     }
 
     aliases = [

@@ -11,6 +11,8 @@ class TestMonastry(unittest.TestCase):
             self.output = []
             def _print(s):
                 self.output.append(s.pop())
+
+            # Overwrite the default `print' function to store output in list
             monastry.interpreter.add_builtin('print', _print)
 
     def assertOutput(self, input, output):
