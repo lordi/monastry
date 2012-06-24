@@ -51,6 +51,7 @@ class Monastry(Thread):
     def add_buffer(self):
         " Add current vim buffer as a track "
         import vim
+        logging.info('Adding vim buffer')
         self.add_track(VimBufferTrack(self, vim.current.buffer))
 
     def update_vim(self):

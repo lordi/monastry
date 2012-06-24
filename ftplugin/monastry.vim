@@ -3,7 +3,7 @@ import sys
 import os
 import logging
 
-logging.basicConfig(filename='monstry.log', level=logging.INFO)
+logging.basicConfig(filename='monastry.log', level=logging.INFO)
 logging.info('Started')
 
 # TODO fix imports
@@ -14,9 +14,10 @@ sys.path.append('../monastry')
 mot = None
 try:
     from monastry import Monastry
-    mot = Monastry()
+    from monastry.backends import SuperColliderBackend
+    mot = Monastry(SuperColliderBackend())
     mot.start()
-except e:
+except Exception, e:
     logging.exception(e)
 endpython
 
